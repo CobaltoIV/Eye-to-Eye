@@ -1,0 +1,1 @@
+    python ~/Workspace/WorkspacePython/opencv/doc/pattern_tools/gen_pattern.py -o ~/Workspace/WorkspaceTese/Calib/chessboard.svg --rows 8 --columns 8 --type checkerboard --square_size 30

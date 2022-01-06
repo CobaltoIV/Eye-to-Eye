@@ -1,0 +1,38 @@
+{
+    "camera": "HD Web Camera (05a3:9331)",
+    "platform": "X11; Linux x86_64",
+    "avg_reprojection_error": 0.21739885716688473,
+    "camera_matrix": [
+        [
+            825.0813241923483,
+            0,
+            381.1078936437301
+        ],
+        [
+            0,
+            823.6805380530766,
+            299.3149592455341
+        ],
+        [
+            0,
+            0,
+            1
+        ]
+    ],
+    "distortion_coefficients": [
+        -0.3613132438021864,
+        0.11869596513482972,
+        -0.0004461727952304065,
+        -0.00027877851041012647,
+        -0.010374889883404364
+    ],
+    "distortion_model": "rectilinear",
+    "img_size": [
+        800,
+        600
+    ],
+    "calibration_time": "Sun, 31 Jan 2021 12:43:12 GMT",
+    "caveats": [
+        "cropped"
+    ]
+}
