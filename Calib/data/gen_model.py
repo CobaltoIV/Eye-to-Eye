@@ -1,7 +1,7 @@
 n_x = 8
 n_y = 5
-x_i = 44
-y_i = 44
+x_i = 280
+y_i = 49
 l = 30
 
 dummy = "{c_x:.4f} {c_y:.4f} {c_z:.4f} \n"

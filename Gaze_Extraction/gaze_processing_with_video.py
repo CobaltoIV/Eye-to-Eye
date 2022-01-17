@@ -38,6 +38,14 @@ def drawGaze(image, gazevec, f_center,color, cam_matrix, dist_coeff):
     return image
 
 
+def annotateFrame(image, mpii_gaze, gaze360_gaze, avg_gaze, f_center, origin, bbox, cam_matrix, dist_coeff):
+    image = drawGaze(image,gaze360_gaze,f_center,(255,255,255), cam_matrix, dist_coeff)
+    image = drawGaze(image, mpii_gaze, origin, (255,0,0), cam_matrix, dist_coeff)
+    image = drawGaze(image,avg_gaze,f_center,(0,255,0), cam_matrix, dist_coeff)
+    image = cv2.rectangle(image, (bbox[0]-50,bbox[1]-50), (bbox[2]+50,bbox[3]+50), (255,255,255))
+    image = image.astype(np.uint8)
+    return image
+
 def spherical2cartesial(x): 
     output = torch.zeros(x.size(0),3) 
     output[:,0] = torch.cos(x[:,1])*torch.sin(x[:,0])
@@ -105,16 +113,23 @@ def main(args):
 
     landmark_indices= [36, 39, 42, 45, 48, 54]
 
+
+
     # Given a video path
     fn = args.video_fp.split('/')[-1]
+    gaze_mpii = fn.replace('.mp4', '')
 
     reader = imageio.get_reader(args.video_fp) 
 
     suffix = get_suffix(args.video_fp)
 
     fps = reader.get_meta_data()['fps']
-    
+    annotated_video = args.video_fp.replace(suffix, "_annotated.mp4")
+    out = imageio.get_writer(annotated_video,fps=fps)
+
     csv_outfile = f'../results/{args.doctor}/{fn.replace(suffix, "_gaze360_out.csv")}'
+
+    avg_csv_outfile = f'../results/{args.doctor}/{fn.replace(suffix, "_avg_gaze360_out.csv")}'
 
     land_file = args.video_fp.replace(suffix, "_land.csv")
 
@@ -147,10 +162,13 @@ def main(args):
         
     print('Read Landmarks from ' + land_file)
     res = []
+    avg_res = []
     ind_frames = frames_with_people.keys()
 
         
     #Run Gaze Detection
+
+    mpii_df = pd.read_csv(f'../results/{args.doctor}/{gaze_mpii}_gaze_output.csv', names=nm)
 
     #Load Gaze360 model
     model = GazeLSTM()
@@ -177,6 +195,8 @@ def main(args):
         
             if i not in ind_frames:  # If face was not detected in frame
                 res.append([i,0,0,np.zeros((3,1)),np.zeros((2,1)), np.zeros((3,1))])
+                avg_res.append([i,0,0,np.zeros((3,1)),np.zeros((2,1)), np.zeros((3,1))])
+                out.append_data(image)
             else:
                 box = frames_with_people[i][1]
                 face_center = frames_with_people[i][0]
@@ -198,22 +218,43 @@ def main(args):
                 #Convert bounding box pixels to int
                 bbox = np.asarray(box).astype(int)   
                 
-                
+                origin = mpii_df.iloc[i][["facex", "facey", "facez"]].to_numpy()
+                mpiigaze = mpii_df.iloc[i][["3d_x", "3d_y", "3d_z"]].to_numpy()
                 #Get 3d gaze coords
                 output_gaze,_ = model(input_image.view(1,7,3,224,224).cuda())
                 gaze = spherical2cartesial(output_gaze).detach().numpy()
                 gaze = -gaze.reshape((-1))
                 
+                #Average outputs of Mpii and Gaze360
+                avg_gaze = np.add(mpiigaze,gaze)/2
+                
+                #Convert to 2D
+                avg_gaze2d = Gaze3DTo2D(avg_gaze,face_center,ext_rmat,ext_tvec)
+                avg_gaze2d = convertToScreenCoordinates(avg_gaze2d, mon_w, mon_h)
                 
                 gaze2d = Gaze3DTo2D(gaze,face_center,ext_rmat,ext_tvec)
                 gaze2d = convertToScreenCoordinates(gaze2d, mon_w, mon_h)
                 
                 res.append([i, 1, box[4], face_center[0], face_center[1], face_center[2], gaze2d[0][0], gaze2d[1][0],gaze[0], gaze[1], gaze[2]])
-    print('Gaze Extraction done \n saving results to '+ csv_outfile)
+                avg_res.append([i, 1, box[4], face_center[0], face_center[1], face_center[2], avg_gaze2d[0][0], avg_gaze2d[1][0], avg_gaze[0], avg_gaze[1], avg_gaze[2]])
+                
+                video_image = getIm(image)
+                
+                #Draw gaze and face rectangle in image 
+                video_image = annotateFrame(video_image,mpiigaze,gaze, avg_gaze, face_center, origin, bbox, cam_matrix, dist_coeff)
+                out.append_data(video_image)
+    print('Dump annotated video to ' + annotated_video)
+    out.close()
+    print('Gaze Extraction done \n saving results to '+ csv_outfile + ' and ' + avg_csv_outfile)
     res_df = pd.DataFrame(data = res, columns = ["frame", "f_found", "f_confidence", "face_centerx", "face_centery", "face_centerz",
             "2d_x", "2d_y", "3d_x", "3d_y", "3d_z"]
     )
     res_df.to_csv(csv_outfile)
+
+    avg_res_df = pd.DataFrame(data = avg_res, columns = ["frame", "f_found", "f_confidence", "face_centerx", "face_centery", "face_centerz",
+            "2d_x", "2d_y", "3d_x", "3d_y", "3d_z"]
+    )
+    avg_res_df.to_csv(avg_csv_outfile)
 
 if __name__ == '__main__':      
     parser = argparse.ArgumentParser(
@@ -223,6 +264,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--doctor', type=str, required=True)
     parser.add_argument('-ip', '--int_params', type=str, help = "Intrinsic Parameters of camera")
     parser.add_argument('-ep', '--ext_params', type=str, help = "Extrinsic Parameters of camera")
+
 
 
     args = parser.parse_args()

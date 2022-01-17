@@ -60,24 +60,20 @@ class RecordingSetup:
         
         
         
-        #str = '../videos/Testing/' + self.id.get()+".mp4"
-        
-        id = self.id.get()
+        str = '../videos/Testing/' + self.id.get()+".mp4"
+        """
+        id  =self.id.get()
         mode =  self.mode.get()
-        spec = self.spec.get()
         curr_day = datetime.now().strftime("%d-%m-%Y") 
         curr_time = datetime.now().strftime("%d-%m-%Y__%H_%M_%S") 
         
-        spec_dir = f'/media/vislab/My_Passport/Tese/videos/{spec}'
-        doctor_dir = f'{spec_dir}/D{id}'
+        doctor_dir = f'../videos/D{self.id.get()}'
         day_dir = f'{doctor_dir}/{curr_day}'
         mode_dir = f'{day_dir}/{mode}'
-        
+        print()
         
         # TODO Add Medical specialization as top directory
-        if not os.path.exists(spec_dir):
-            print(f'No {spec_dir} directory found \n Creating it \n')
-            os.mkdir(spec_dir)
+        
         if not os.path.exists(doctor_dir):
             print(f'No {doctor_dir} directory found \n Creating it \n')
             os.mkdir(doctor_dir)
@@ -91,11 +87,11 @@ class RecordingSetup:
          
         print("Recording video to " + f'D{id}/{curr_day}/{mode}/D{id}_{mode[0]}-{curr_time}.mp4')
         #str = "../videos/" + self.mode.get() + "/" +  self.id.get() + self.timestamp.strftime("-T-%m-%d-%Y__%H_%M_%S") +".mp4"
-        name = f'D{id}_{mode}-{curr_time}.mp4'
+        #str = f'D{self.id.get()}/{datetime.now().strftime("%d-%m-%Y")}/{self.mode.get()}/D{self.id.get()}_{self.mode.get()[0]}-{datetime.now().strftime("%d-%m-%Y__%H_%M_%S")}.mp4'
+        """
         
-        video_location = f'{mode_dir}/{name}'  
         # Command : ffmpeg -f video4linux2 -s hd720 -r 15 -input_format mjpeg -i /dev/video0 out.mp4
-        self.p = subprocess.Popen(["ffmpeg", "-f", "video4linux2", "-s","hd720","-input_format","mjpeg", "-i", "/dev/video0", "-r", "15", video_location])
+        self.p = subprocess.Popen(["ffmpeg", "-f", "video4linux2", "-s","hd720","-input_format","mjpeg", "-i", "/dev/video0", "-r", "15", str])
        
 
     def stop(self, *args):

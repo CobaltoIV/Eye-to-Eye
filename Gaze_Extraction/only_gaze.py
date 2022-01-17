@@ -1,7 +1,4 @@
 # coding: utf-8
-
-__author__ = 'cleardusk'
-
 import argparse
 import imageio
 import sys
