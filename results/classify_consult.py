@@ -1,3 +1,4 @@
+from asyncio import FastChildWatcher
 import pandas as pd
 import datetime
 import argparse
@@ -79,15 +80,12 @@ def get_coord_screen(res, x, y, monitor_W, monitor_H):
         return ["not_valid", "not_valid"]
 
 
-def add_columns(row, monitor_W, monitor_H, fps, mpii_bounds, gaze360_bounds):
+def add_columns(row, monitor_W, monitor_H, fps, gaze360_bounds):
     """Function applied to data to classify and process all samples
     """
     gaze360_x = row["gaze360_x"]
     gaze360_y = row["gaze360_y"]
-    
-    mpii_x = row["mpii_x"]
-    mpii_y = row["mpii_y"]
-    
+   
     confidence = row["f_confidence"]
     frame = row["frame"]
     
@@ -95,15 +93,11 @@ def add_columns(row, monitor_W, monitor_H, fps, mpii_bounds, gaze360_bounds):
     
     gaze360_res = get_result(gaze360_x, gaze360_y, confidence, gaze360_bounds)
     
-    mpii_res = get_result(mpii_x, mpii_y, confidence, mpii_bounds)
     
     gaze360_2d = [gaze360_x*monitor_W, gaze360_y*monitor_H]
-    mpii_2d = [mpii_x*monitor_W, mpii_y*monitor_H]
 
-    dist = math.dist(gaze360_2d, mpii_2d)
-    diff_3d = [row['gaze360_3d_x']- row['mpii_3d_x'], row['gaze360_3d_y']- row['mpii_3d_y'], row['gaze360_3d_z']- row['mpii_3d_z']]
-
-    return time, gaze360_res, mpii_res, gaze360_2d[0], gaze360_2d[1], mpii_2d[0], mpii_2d[1], diff_3d[0], diff_3d[1], diff_3d[2]
+    
+    return time, gaze360_res, gaze360_2d[0], gaze360_2d[1]
 
 
 def main(args):
@@ -114,15 +108,14 @@ def main(args):
        args.config, cv2.FILE_STORAGE_READ)
     W = fs.getNode("monitor_W").real()
     H = fs.getNode("monitor_H").real()
-    mpii_b = bounds(fs.getNode("x0_mpii").real(), fs.getNode("x1_mpii").real(),fs.getNode("y0_mpii").real(),fs.getNode("y1_mpii").real())
     gaze360_b = bounds(fs.getNode("x0_360").real(), fs.getNode("x1_360").real(),fs.getNode("y0_360").real(),fs.getNode("y1_360").real())
 
     name = args.input_file
     
     if not args.output_file:
-        args.output_file = f'{args.consult_folder}/proc_res/{name}_combined_gaze_output.csv'
+        args.output_file = f'{args.consult_folder}/proc_res/{name}_classified_gaze.csv'
         print('Output file not defined saving results to ' + args.output_file)
-        totals_outfile = f'{args.consult_folder}/proc_res/Totals/{name}_totals.csv'
+        totals_outfile = f'{args.consult_folder}/proc_res/Totals/{name}_gaze360_totals.csv'
         
     
     # Video fps
@@ -132,46 +125,66 @@ def main(args):
         "2d_x", "2d_y", "3d_x", "3d_y", "3d_z"]
     # Load samples from .csv
     gaze_360_out = f'{args.consult_folder}/{name}_gaze360_out.csv'
-    mpii_out = f'{args.consult_folder}/{name}_gaze_output.csv'
 
     
     df_360 = pd.read_csv(gaze_360_out,index_col=0)
    
-    df_mpii = pd.read_csv(mpii_out, names=nm)
    
 
 
     df_combined = pd.DataFrame()
 
-    df_combined['frame'] = df_mpii['frame']
-    df_combined['f_confidence'] = df_mpii['f_confidence']
+    df_combined['frame'] = df_360['frame']
+    df_combined['f_confidence'] = df_360['f_confidence']
     df_combined['gaze360_x'] = df_360['2d_x']
     df_combined['gaze360_y'] = df_360['2d_y']
-    df_combined['mpii_x']  =df_mpii['2d_x']
-    df_combined['mpii_y']  =df_mpii['2d_y']
+   
     df_combined['gaze360_3d_x'] = df_360['3d_x']
     df_combined['gaze360_3d_y'] = df_360['3d_y']
     df_combined['gaze360_3d_z'] = df_360['3d_z']
-    df_combined['mpii_3d_x']  =df_mpii['3d_x']
-    df_combined['mpii_3d_y']  =df_mpii['3d_y']
-    df_combined['mpii_3d_z']  =df_mpii['3d_z']
+   
 
 
-    df_combined[['timestamp', 'gaze360_res', 'mpii_res', '2d_gaze360_x', '2d_gaze360_y', '2d_mpii_x', '2d_mpii_y', 'diff_x', 'diff_y', 'diff_z']] =df_combined.apply(add_columns,args=(W, H, fps, mpii_b, gaze360_b), axis=1, result_type='expand')
+    df_combined[['timestamp', 'gaze360_res', '2d_gaze360_x', '2d_gaze360_y']] =df_combined.apply(add_columns,args=(W, H, fps, gaze360_b), axis=1, result_type='expand')
     
-    df_combined[['timestamp', 'gaze360_res', 'mpii_res', 'gaze360_x', 'gaze360_y','mpii_x', 'mpii_y']].to_csv(args.output_file)
+    df_combined[['timestamp', 'gaze360_res', 'gaze360_x', 'gaze360_y']].to_csv(args.output_file)
     
-    df_totals = pd.DataFrame()
+    doc_totals_csv = f'{args.consult_folder}/proc_res/Totals/Stats.csv'
     
-    frame_number  = df_combined['gaze360_res'].value_counts().sum()
+    
+    try:
+        df_totals = pd.read_csv(f'{args.consult_folder}/proc_res/Totals/Stats.csv', index_col=0)
+    except Exception:
+        print('Stats.csv is empty, Create Dataframe')
+        df_totals = pd.DataFrame()
 
+    consult_stats = df_combined['gaze360_res'].value_counts()
+    
+    frame_total = consult_stats.sum()
+    
+    consult_stats_percentages = pd.Series(consult_stats/frame_total).add_suffix('_Percentage')
+    
+    consult_stats['Frame_total'] = consult_stats.sum()
+
+    consult_stats['Name'] = name
+    
+    consult_stats = consult_stats.append(consult_stats_percentages)
+    
+    df_totals = df_totals.append(consult_stats, ignore_index=True)
+       
+       
+    df_totals.to_csv(doc_totals_csv) 
+    
+    """  
+    df_totals.append()
+    
     df_totals['Percentage_gaze360'] = df_combined['gaze360_res'].value_counts()/frame_number
-    df_totals['Percentage_mpii'] = df_combined['mpii_res'].value_counts()/frame_number
     
     df_totals['Counts_gaze360'] = df_combined['gaze360_res'].value_counts()
-    df_totals['Counts_mpii'] = df_combined['mpii_res'].value_counts()
 
-    df_totals.to_csv(totals_outfile)
+    df_totals.to_csv(totals_outfile) 
+    """
+    
     return 0
 
 if __name__ == '__main__':

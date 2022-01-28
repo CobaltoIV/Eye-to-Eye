@@ -12,50 +12,50 @@ class RecordingSetup:
 
         root.title("Consultation Recorder")
 
-        self.mainframe = ttk.Frame(root, padding="3 3 12 12")
-        self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+        mainframe = ttk.Frame(root, padding="3 3 12 12")
+        mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
 
         # Doctor Id entry
         self.id = StringVar()
-        id_entry = ttk.Entry(self.mainframe, width=7, textvariable=self.id)
+        id_entry = ttk.Entry(mainframe, width=7, textvariable=self.id)
         id_entry.grid(column=2, row=1, sticky=(W, E))
-        ttk.Label(self.mainframe, text="Doctor Id").grid(column=1, row=1)
+        ttk.Label(mainframe, text="Doctor Id").grid(column=1, row=1)
 
         # Error Label for Button
         self.error = StringVar()
-        ttk.Label(self.mainframe, textvariable=self.error).grid(
+        ttk.Label(mainframe, textvariable=self.error).grid(
             column=3, row=1)
 
         self.spec = StringVar()
-        spec_entry = ttk.Combobox(self.mainframe, textvariable=self.spec)
+        spec_entry = ttk.Combobox(mainframe, textvariable=self.spec)
         spec_entry.grid(column=2, row=2, sticky=(W, E))
         spec_entry['values'] = ('Spec1', 'Spec2', 'Spec3')
         spec_entry.state(["readonly"])
-        ttk.Label(self.mainframe, text="Doctor Specialty").grid(
+        ttk.Label(mainframe, text="Doctor Specialty").grid(
             column=1, row=2)
 
         self.mode = StringVar()
         mode_entry_presential = ttk.Radiobutton(
-            self.mainframe, text="Presential", variable=self.mode, value="Presential")
+            mainframe, text="Presential", variable=self.mode, value="Presential")
         mode_entry_presential.grid(column=2)
         mode_entry_virtual = ttk.Radiobutton(
-            self.mainframe, text="Virtual", variable=self.mode, value="Virtual")
+            mainframe, text="Virtual", variable=self.mode, value="Virtual")
         mode_entry_virtual.grid(column=2)
-        ttk.Label(self.mainframe, text="Type Of Consultation").grid(
+        ttk.Label(mainframe, text="Type Of Consultation").grid(
             column=1, row=3)
         self.flag = True
         # Record Button
         self.btn = ttk.Button(
-            self.mainframe, text="Record", command=self.record)
+            mainframe, text="Record", command=self.record)
         self.btn.grid(
             column=2, sticky=(W, E))
 
-        for child in self.mainframe.winfo_children():
+        for child in mainframe.winfo_children():
             child.grid_configure(padx=5, pady=5)
         self.recNotice = ttk.Label(
-            self.mainframe, text="Recording", foreground='red')
+            mainframe, text="Recording", foreground='red')
         self.recNotice.grid(column=1, row=5)
         self.recNotice.grid_remove()
 
