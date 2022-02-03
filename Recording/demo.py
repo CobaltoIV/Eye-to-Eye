@@ -33,7 +33,7 @@ class RecordingSetup:
         self.spec = StringVar()
         spec_entry = ttk.Combobox(mainframe, textvariable=self.spec)
         spec_entry.grid(column=2, row=2, sticky=(W, E))
-        spec_entry['values'] = ('Neurologia', 'MedInt', 'MedGeral', 'Genecologia')
+        spec_entry['values'] = ('Neurologia', 'MedInt', 'MedGeral', 'Genecologia', 'Endocrinologia')
         spec_entry.state(["readonly"])
         ttk.Label(mainframe, text="Doctor Specialty").grid(column=1, row=2)
 
@@ -49,7 +49,7 @@ class RecordingSetup:
         #Record Button
         self.btn = ttk.Button(mainframe, text="Record", command=self.record)
         self.btn.grid(
-            column=2,sticky=(W, E))
+            column=2,sticky=(W, E, N, S))
         
 
         for child in mainframe.winfo_children():
