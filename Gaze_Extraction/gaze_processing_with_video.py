@@ -241,8 +241,15 @@ def main(args):
                 video_image = getIm(image)
                 
                 #Draw gaze and face rectangle in image 
-                video_image = annotateFrame(video_image,mpiigaze,gaze, avg_gaze, face_center, origin, bbox, cam_matrix, dist_coeff)
-                out.append_data(video_image)
+                try:
+                    video_image = annotateFrame(video_image,mpiigaze,gaze, avg_gaze, face_center, origin, bbox, cam_matrix, dist_coeff)
+                    out.append_data(video_image)
+                except:
+                    out.append_data(video_image)
+                   
+		           
+                
+                
     print('Dump annotated video to ' + annotated_video)
     out.close()
     print('Gaze Extraction done \n saving results to '+ csv_outfile + ' and ' + avg_csv_outfile)

@@ -72,7 +72,7 @@ class RecordingSetup:
 
         # Command : ffmpeg -f video4linux2 -s hd720 -r 15 -input_format mjpeg -i /dev/video0 out.mp4
         self.p = subprocess.Popen(["ffmpeg", "-f", "video4linux2", "-s", "hd720",
-                                   "-input_format", "mjpeg", "-i", "/dev/video0", "-r", "15", str])
+                                   "-input_format", "mjpeg", "-i", "/dev/video0", "-r", "15","-preset","veryfast", str])
 
     def stop(self, *args):
         self.btn.configure(text="Record")
