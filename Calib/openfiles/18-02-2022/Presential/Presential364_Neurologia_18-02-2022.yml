@@ -12,11 +12,10 @@ monitor_T: !!opencv-matrix
    dt: f
    data: [40.598286, 21.173242, -19.564582  ]
   
-x0_360: 0.0
+x0_360: -0.2
 x1_360: 1.2
 y0_360: -0.25
 y1_360: 1.5
-keyboard_tresh: 7.0
 x0_mpii: 0.2
 x1_mpii: 0.8
 y0_mpii: 0.0
