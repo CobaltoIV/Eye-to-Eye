@@ -45,36 +45,46 @@ def get_result(x, y, confidence, boundaries):
 def doc_classification(res, x ,y, doc, mode):
     """Function that alters classification given ini function of doctor maneurisms during consultation
     """
-    if (doc == 'D1' or  doc=='D2') and mode == 'Presential':
+    if doc == 'D1' and mode == 'Presential':
         if res == 'Left Of Screen' and y > 5.0:
             res = 'Keyboard'
-        elif res == 'Left Of Screen':
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
         if res == 'Right Of Screen':
             res = 'Screen'
-    elif doc == 'D9' and mode == 'Virtual':
-        if res == 'Left Of Screen' and y > 1.5 and x < -0.5:
+    elif doc == 'D2' and mode == 'Presential':
+        if res == 'Left Of Screen' and x > -1.5 and y > 5.0:
             res = 'Keyboard'
-        elif res == 'Left Of Screen':
+        elif res == 'Left Of Screen' and x < -1.5 and y > 10.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D9' and mode == 'Virtual':
+        if res == 'Left Of Screen' and ((y > 1.5 and x > -0.5) or y > 5.0):
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
         if res == 'Right Of Screen':
             res = 'Screen'
     elif doc == 'D12' and mode == 'Virtual':
-        if res == 'Left Of Screen' and y > 1.7:
+        if res == 'Left Of Screen' and y > 2.0:
             res = 'Keyboard'
-        elif res == 'Left Of Screen':
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
         if res == 'Right Of Screen':
             res = 'Screen'
     elif doc == 'D13' and mode == 'Virtual':
         if res == 'Left Of Screen' and y > 2.0:
             res = 'Keyboard'
-        elif res == 'Left Of Screen':
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
         if res == 'Right Of Screen':
             res = 'Screen'
     else:
-        if res == 'Left Of Screen':
+        if res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
         if res == 'Right Of Screen':
             res = 'Screen'
@@ -133,7 +143,6 @@ def add_columns(row, monitor_W, monitor_H, fps, gaze360_bounds, doc,mode):
     gaze360_res = doc_classification(gaze360_res,gaze360_x,gaze360_y, doc, mode)
     
     gaze360_2d = [gaze360_x*monitor_W, gaze360_y*monitor_H]
-
     
     return time, gaze360_res, gaze360_2d[0], gaze360_2d[1]
 
@@ -157,13 +166,19 @@ def main(args):
         args.output_file = f'{args.consult_folder}/proc_res/{name}_classified_gaze.csv'
         print('Output file not defined saving results to ' + args.output_file)
         totals_outfile = f'{args.consult_folder}/proc_res/Totals/{name}_gaze360_totals.csv'
-        
-    doc, mode = args.consult_folder.split('/')
+    
+    str = name.split('_')
+    doc = str[0]
+    mode = str[1].split('-')[0]
     # Video fps
     fps = 15
     print(name)
     print(doc)
     print(mode)
+    print(gaze360_b.x0)
+    print(gaze360_b.x1)
+    print(gaze360_b.y0)
+    print(gaze360_b.y1)
     nm = ["frame", "f_found", "f_confidence", "facex", "facey", "facez",
         "2d_x", "2d_y", "3d_x", "3d_y", "3d_z"]
     # Load samples from .csv
@@ -214,7 +229,6 @@ def main(args):
        
        
     df_totals.to_csv(doc_totals_csv) 
-    
     """  
     df_totals.append()
     
