@@ -8,7 +8,7 @@ def main(args):
     gaze  = df [['gaze360_x', 'gaze360_y']]
     gaze = gaze.dropna(axis=0)
     
-    gaze = gaze.drop(gaze[(abs(gaze['gaze360_x']) > 30) | (abs(gaze['gaze360_y']) > 30)].index)
+    gaze = gaze.drop(gaze[(abs(gaze['gaze360_x']) > 3) | (abs(gaze['gaze360_y']) > 3)].index)
     
     kmeans = KMeans(n_clusters = args.number_clusters, random_state=0).fit(gaze)
     print(kmeans.cluster_centers_)

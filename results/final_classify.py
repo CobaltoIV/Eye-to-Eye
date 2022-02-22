@@ -62,8 +62,23 @@ def doc_classification(res, x ,y, doc, mode):
         
         if res == 'Right Of Screen':
             res = 'Screen'
+    elif doc == 'D11' and mode == 'Presential':
+        if res == 'Left Of Screen' and y > 7.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        
+        if res == 'Right Of Screen':
+            res = 'Screen'
     elif doc == 'D9' and mode == 'Virtual':
-        if res == 'Left Of Screen' and ((y > 1.5 and x > -0.5) or y > 5.0):
+        if res == 'Left Of Screen' and ((y > 1.5 and x > -0.5)):
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D10' and mode == 'Virtual':
+        if res == 'Left Of Screen' and (y > 1.5 and x > -1.0) :
             res = 'Keyboard'
         elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
