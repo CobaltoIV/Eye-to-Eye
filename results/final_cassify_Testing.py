@@ -42,7 +42,44 @@ def get_result(x, y, confidence, boundaries):
     else:
         return "Screen"
 
-
+def doc_classification(res, x ,y, doc, mode):
+    """Function that alters classification given ini function of doctor maneurisms during consultation
+    """
+    if (doc == 'D1' or  doc=='D2') and mode == 'Presential':
+        if res == 'Left Of Screen' and y > 5.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D9' and mode == 'Virtual':
+        if res == 'Left Of Screen' and y > 1.5 and x < -0.5:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D12' and mode == 'Virtual':
+        if res == 'Left Of Screen' and y > 1.7:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D13' and mode == 'Virtual':
+        if res == 'Left Of Screen' and y > 2.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    else:
+        if res == 'Left Of Screen':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    
+    return res
 
 def get_timestamp(frame, fps):
     """Calculate timestamp in the video
@@ -80,7 +117,7 @@ def get_coord_screen(res, x, y, monitor_W, monitor_H):
         return ["not_valid", "not_valid"]
 
 
-def add_columns(row, monitor_W, monitor_H, fps, gaze360_bounds):
+def add_columns(row, monitor_W, monitor_H, fps, gaze360_bounds, doc,mode):
     """Function applied to data to classify and process all samples
     """
     gaze360_x = row["gaze360_x"]
@@ -93,6 +130,7 @@ def add_columns(row, monitor_W, monitor_H, fps, gaze360_bounds):
     
     gaze360_res = get_result(gaze360_x, gaze360_y, confidence, gaze360_bounds)
     
+    gaze360_res = doc_classification(gaze360_res,gaze360_x,gaze360_y, doc, mode)
     
     gaze360_2d = [gaze360_x*monitor_W, gaze360_y*monitor_H]
 
@@ -100,6 +138,9 @@ def add_columns(row, monitor_W, monitor_H, fps, gaze360_bounds):
     return time, gaze360_res, gaze360_2d[0], gaze360_2d[1]
 
 
+    
+    
+    
 def main(args):
     # Loading Screen Size
     if not args.config:
@@ -117,10 +158,12 @@ def main(args):
         print('Output file not defined saving results to ' + args.output_file)
         totals_outfile = f'{args.consult_folder}/proc_res/Totals/{name}_gaze360_totals.csv'
         
-    
+    doc, mode = args.consult_folder.split('/')
     # Video fps
     fps = 15
     print(name)
+    print(doc)
+    print(mode)
     nm = ["frame", "f_found", "f_confidence", "facex", "facey", "facez",
         "2d_x", "2d_y", "3d_x", "3d_y", "3d_z"]
     # Load samples from .csv
@@ -129,9 +172,6 @@ def main(args):
     
     df_360 = pd.read_csv(gaze_360_out,index_col=0)
    
-   
-
-
     df_combined = pd.DataFrame()
 
     df_combined['frame'] = df_360['frame']
@@ -145,10 +185,10 @@ def main(args):
    
 
 
-    df_combined[['timestamp', 'gaze360_res', '2d_gaze360_x', '2d_gaze360_y']] =df_combined.apply(add_columns,args=(W, H, fps, gaze360_b), axis=1, result_type='expand')
-    
+    df_combined[['timestamp', 'gaze360_res', '2d_gaze360_x', '2d_gaze360_y']] =df_combined.apply(add_columns,args=(W, H, fps, gaze360_b, doc,mode), axis=1, result_type='expand')
+        
     df_combined[['timestamp', 'gaze360_res', 'gaze360_x', 'gaze360_y']].to_csv(args.output_file)
-    """
+    
     doc_totals_csv = f'{args.consult_folder}/proc_res/Totals/Stats.csv'
     
     
@@ -174,7 +214,6 @@ def main(args):
        
        
     df_totals.to_csv(doc_totals_csv) 
-    """
     
     """  
     df_totals.append()
