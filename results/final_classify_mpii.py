@@ -63,13 +63,14 @@ def doc_classification(res, x ,y, doc, mode):
         if res == 'Right Of Screen':
             res = 'Screen'
     elif doc == 'D11' and mode == 'Presential':
+        ##TODO Code for mpii analysis do to mask shit 
         if res == 'Left Of Screen' and y > 7.0:
             res = 'Keyboard'
         elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
-        
         if res == 'Right Of Screen':
             res = 'Screen'
+            
     elif doc == 'D9' and mode == 'Virtual':
         if res == 'Left Of Screen' and ((y > 1.5 and x > -0.5)):
             res = 'Keyboard'
@@ -195,10 +196,10 @@ def main(args):
     print(gaze360_b.y0)
     print(gaze360_b.y1)
     nm = ["frame", "f_found", "f_confidence", "facex", "facey", "facez",
-        "2d_x", "2d_y", "3d_x", "3d_y", "3d_z"]
+        "2d_x", "2d_y", "3d_x", "3d_y", "3d_z","mpii_2d_x", "mpii_2d_y"]
     # Load samples from .csv
     gaze_360_out = f'{args.consult_folder}/{name}_gaze360_out.csv'
-
+    
     
     df_360 = pd.read_csv(gaze_360_out,index_col=0)
    
@@ -208,6 +209,9 @@ def main(args):
     df_combined['f_confidence'] = df_360['f_confidence']
     df_combined['gaze360_x'] = df_360['2d_x']
     df_combined['gaze360_y'] = df_360['2d_y']
+    df_combined['mpii_x'] = df_360['mpii_2d_x']
+    df_combined['mpii_y'] = df_360['mpii_2d_y']
+    
    
     df_combined['gaze360_3d_x'] = df_360['3d_x']
     df_combined['gaze360_3d_y'] = df_360['3d_y']
@@ -217,7 +221,7 @@ def main(args):
 
     df_combined[['timestamp', 'gaze360_res', '2d_gaze360_x', '2d_gaze360_y']] =df_combined.apply(add_columns,args=(W, H, fps, gaze360_b, doc,mode), axis=1, result_type='expand')
         
-    df_combined[['timestamp', 'gaze360_res', 'gaze360_x', 'gaze360_y']].to_csv(args.output_file)
+    df_combined[['timestamp', 'gaze360_res', 'gaze360_x', 'gaze360_y','mpii_x', 'mpii_y']].to_csv(args.output_file)
     
     doc_totals_csv = f'{args.consult_folder}/proc_res/Totals/Stats.csv'
     
