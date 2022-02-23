@@ -4,4 +4,4 @@
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Genecologia/D12/Virtual/18-02-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D4/Virtual/17-02-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D7/Virtual/10-02-2022
-bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Neurologia/D11/Presential/21-02-2022
+bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Neurologia/D11/Presential/22-02-2022
