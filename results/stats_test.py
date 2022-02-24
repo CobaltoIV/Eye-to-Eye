@@ -1,4 +1,5 @@
 from ast import arg
+import seaborn as sns
 from cmath import sqrt
 from scipy.stats import shapiro, mannwhitneyu, levene
 import matplotlib.pyplot as plt
@@ -17,23 +18,37 @@ def normal_test(data):
     return 
     
 def main(args):
+   
     df_presential = pd.read_csv(args.presential, index_col=0)
     df_virtual = pd.read_csv(args.virtual, index_col=0)
     
-    presential_data = df_presential['Patient_Percentage']
-    virtual_data = df_virtual['Patient_Percentage']
-
+    df_presential['type'] = 'Presential'
+    df_virtual['type'] = 'Virtual'
+    
+    presential_data = df_presential['Patient_Percentage'].round(4)
+    virtual_data = df_virtual['Patient_Percentage'].round(4)
+    
+    
+    df =  pd.concat([df_presential[['Patient_Percentage', 'type']].round(4),df_virtual[['Patient_Percentage', 'type']].round(4)], ignore_index=True)
+    df['Doctor'] = 'D1'
     normal_test(presential_data)
     normal_test(virtual_data)
     
     print(levene(presential_data,  virtual_data))
     
-    U1, p = mannwhitneyu(presential_data, virtual_data, method='exact')
+    print(df)
+    U1, p = mannwhitneyu(presential_data, virtual_data, method='auto')
     print('Statistics=%.3f, p=%.3f' % (U1, p))
     U2 = 20*20-U1
     z = (U1 + 0.5) - ((U1+U2)/2)/sqrt((20*20*(20+20+1))/12)
     
-    plt.boxplot([presential_data, virtual_data])
+    sns.violinplot(y = 'Patient_Percentage', x='Doctor', hue = 'type',data = df, split=True, showmedians=True) 
+    
+    #plt.boxplot([presential_data, virtual_data])
+    #plt.hist(presential_data, bins=30)
+    #plt.hist(virtual_data, bins=30)
+    
+    
     plt.show()
     
 if __name__ == '__main__':

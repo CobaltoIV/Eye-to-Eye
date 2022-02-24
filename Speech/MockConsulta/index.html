@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>teste nuno</title>
+    <!-- Browser Warning -->
+    <style>
+        .warning-modal {
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        /* Modal Content */
+        .warning-modal-content {
+            border-radius: 4px;
+            background-color: #ff9800;
+            margin: auto;
+            width: 55rem;
+            height: 4rem;
+        }
+
+        .warning-white-18dp {
+            position: relative;
+            top: 1rem;
+            left: 1rem;
+            float: left;
+            height: 2rem;
+            width: 2rem;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100%" height="100%"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>');
+        }
+
+        .warning-modal-text {
+            position: relative;
+            color: white;
+            left: 2rem;
+            float: left;
+            font-size: 20px;
+            user-select: none;
+        }
+
+        /* The Close Button */
+        .close {
+            position: relative;
+            top: 1rem;
+            right: 1rem;
+            color: #ffffff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #ebebeb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+    <!-- SessionViewer -->
+    <style>
+        .font {
+            font-family: Calibri, sans-serif;
+        }
+
+        .background {
+            background: #F7F7F7;
+        }
+
+        .session-viewer {
+            right: 0;
+            left: 3rem;
+            overflow-x: hidden;
+            position: fixed;
+            z-index: 0;
+            top: 2rem;
+            bottom: 1.3rem;
+        }
+
+        .main-common {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            overflow: hidden;
+            transition: right 200ms cubic-bezier(0.4, 0.25, 0.75, 0.6);
+            top: 0;
+        }
+
+        .main-with-sidebar {
+            right: 25.5rem;
+        }
+
+        .main {
+            right: 3rem;
+        }
+
+        .flex-vertical {
+            display: flex;
+            flex-flow: column;
+        }
+
+        .header-in-video {
+            line-height: 2.4rem;
+            color: rgba(255, 255, 255, 0.8);
+            background-color: rgba(42, 45, 51, 0.8);
+            padding: 0.0rem 0.5rem;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: lighter;
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            position: absolute;
+            flex-direction: row;
+            z-index: 11;
+            left: .7rem;
+            top: .7rem;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .player {
+            flex-grow: 1;
+            width: 100%;
+        }
+    </style>
+    <!-- ViewerPlayer -->
+    <style>
+        .container-without-bar {
+            background-color: #131313;
+            position: relative;
+            height: 100%;
+        }
+
+        .video {
+            position: relative;
+            height: calc(100% - 4rem);
+        }
+    </style>
+    <!-- HTMLVideo -->
+    <style>
+        .layout-util-container {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 0;
+        }
+        .html-video-one-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Quad Layout */
+        .layout-quad {
+            display: flex;
+            flex-flow: row wrap;
+        }
+        .layout-quad-inner {
+            width: 50%;
+            height: 50%;
+            color: #30d599;
+        }
+
+        /* Flow Layout */
+        .layout-flow {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: block;
+        }
+        .layout-flow-left {
+            float: left;
+            height: 100%;
+            width: 66%;
+        }
+
+        .layout-flow-right-centered-0 {
+            height: 50%;
+            width: 34%;
+            position: absolute;
+            right: 0;
+        }
+        .layout-flow-right-centered-1 {
+            height: 50%;
+            width: 34%;
+            position: absolute;
+            right: 0;
+            top: 50%;
+        }
+
+        /* Horizontal Layout */
+        .layout-horizontal {
+            display: flex;
+            flex-flow: row;
+        }
+        .layout-horizontal-inner {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+    </style>
+    <!-- Track Bar -->
+    <style>
+        .viewer-track-bar-container {
+            background-color: #2A2D33;
+            height: 4rem;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            position: relative;
+        }
+
+        .play-pause {
+            color: #FFF;
+            text-align: center;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            height: 4rem;
+            width: 5.6rem;
+            line-height: 4rem;
+            cursor: pointer;
+            background-color: #3FB9E8;
+        }
+
+        .track-bar {
+            position: absolute;
+            top: 0;
+            left: 7.4rem;
+            right: 2rem;
+            height: 3rem;
+        }
+
+        .track-bar-container {
+            top: .7rem;
+            position: absolute;
+            right: 0;
+            left: 0;
+            height: 1rem;
+            z-index: 6;
+        }
+
+        .track-bar-container:hover {
+            cursor: pointer
+        }
+
+        .controls-left {
+            color: #CCC;
+            position: absolute;
+            height: 2rem;
+            top: 1.8rem;
+            width: 40rem;
+            left: 7.7rem;
+        }
+
+        .controls-left div * {
+            float: left;
+        }
+
+        .track-bar-button-container {
+            cursor: pointer;
+        }
+
+        .track-bar-button-container:hover {
+            color: #CCC;
+        }
+
+        .icon-box-container {
+            position: relative;
+            height: 100%;
+        }
+
+        .volume-menu {
+            position: relative;
+            height: 100%;
+            float: left;
+            background-color: #2A2D33;
+            padding: 0;
+            overflow: hidden;
+            -webkit-transition: all .5s;
+            -moz-transition: all .5s;
+            -ms-transition: all .5s;
+            -o-transition: all .5s;
+            transition: all .5s;
+            width: 9.8rem;
+        }
+
+        .time {
+            color: #FFF;
+            float: left;
+            font-size: 0.9rem;
+            font-weight: lighter;
+            margin-left: 0.0rem;
+            line-height: 2rem;
+        }
+    </style>
+    <!-- Icons -->
+    <style>
+        .logo {
+            position: absolute;
+            left: 3rem;
+            width: 7rem;
+            height: 1.5rem;
+        }
+
+        .sim-capture-logo {
+            background: url('data:image/svg+xml;utf8,\
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 133.54 25.23" width="100%" height="100%">\
+                <path fill="rgb(102,103,102)" d="M0.66,16.37c0.71,0.48,2.12,1.02,3.28,1.02 c1.43,0,2.07-0.65,2.07-1.56c0-0.94-0.53-1.39-2.12-2.02c-2.51-0.91-3.54-2.39-3.54-4.04c0-2.44,1.87-4.31,4.86-4.31 c1.43,0,2.67,0.36,3.44,0.83L7.99,8.72c-0.53-0.34-1.58-0.8-2.72-0.8c-1.16,0-1.8,0.62-1.8,1.48c0,0.88,0.61,1.28,2.25,1.93 c2.35,0.89,3.41,2.16,3.44,4.21c0,2.53-1.82,4.34-5.24,4.34c-1.56,0-2.97-0.39-3.92-0.97L0.66,16.37z"/>\
+                <path fill="rgb(102,103,102)" d="M11.83,19.61V5.77h3.25v13.83H11.83z M13.44,3.78 c-1.09,0-1.8-0.85-1.8-1.87c0-1.08,0.74-1.9,1.83-1.9c1.11,0,1.79,0.83,1.82,1.9c0,1.03-0.71,1.87-1.82,1.87H13.44z"/>\
+                <path fill="rgb(102,103,102)" d="M18.59,9.89c0-1.59-0.05-2.93-0.1-4.12h2.78l0.16,2.05h0.08 c0.6-1.08,1.77-2.36,3.96-2.36c1.7,0,3.01,1.02,3.57,2.56h0.05c0.45-0.77,0.98-1.34,1.56-1.73c0.74-0.54,1.56-0.83,2.65-0.83 c2.11,0,4.28,1.56,4.28,5.99v8.15h-3.18v-7.65c0-2.3-0.74-3.66-2.3-3.66c-1.12,0-1.93,0.85-2.28,1.84c-0.1,0.31-0.16,0.77-0.16,1.17 v8.29h-3.17v-8.01c0-1.93-0.71-3.29-2.22-3.29c-1.22,0-2.04,1.02-2.35,1.96c-0.11,0.37-0.16,0.77-0.16,1.17v8.18h-3.18V9.89z"/>\
+                <path fill="rgb(53,198,244)" d="M50.49,19.18c-0.68,0.34-2.04,0.71-3.64,0.71 c-4.02,0-6.64-2.78-6.64-7.07c0-4.15,2.65-7.36,7.17-7.36c1.19,0,2.4,0.28,3.15,0.62l-0.58,2.64c-0.53-0.28-1.3-0.54-2.46-0.54 c-2.48,0-3.97,1.96-3.94,4.49c0,2.84,1.72,4.46,3.94,4.46c1.11,0,1.93-0.26,2.57-0.54L50.49,19.18z"/>\
+                <path fill="rgb(53,198,244)" d="M59.72,12.84c-2.3-0.03-4.49,0.48-4.49,2.58 c0,1.37,0.82,1.99,1.85,1.99c1.32,0,2.25-0.91,2.57-1.9c0.07-0.25,0.07-0.51,0.07-0.77V12.84z M62.9,16.28 c0,1.25,0.05,2.47,0.22,3.32h-2.94l-0.24-1.53h-0.08c-0.77,1.08-2.11,1.84-3.81,1.84c-2.59,0-4.05-2.02-4.05-4.12 c0-3.47,2.89-5.25,7.65-5.23v-0.22c0-0.91-0.34-2.42-2.62-2.42c-1.27,0-2.6,0.42-3.47,1.03l-0.64-2.28 c0.95-0.62,2.63-1.22,4.66-1.22c4.13,0,5.32,2.81,5.32,5.85V16.28z"/>\
+                <path fill="rgb(53,198,244)" d="M69.59,13.81c0,0.34,0.02,0.65,0.08,0.97 c0.34,1.42,1.48,2.44,2.88,2.44c2.07,0,3.28-1.84,3.28-4.57c0-2.44-1.11-4.43-3.2-4.43c-1.35,0-2.6,1.06-2.94,2.59 c-0.05,0.28-0.1,0.59-0.1,0.88V13.81z M66.33,10.38c0-1.82-0.05-3.3-0.1-4.6h2.86l0.16,2.13h0.05c0.95-1.56,2.45-2.44,4.42-2.44 c2.96,0,5.42,2.72,5.42,7.04c0,5-2.94,7.42-5.88,7.42c-1.61,0-2.96-0.74-3.62-1.84h-0.05v7.15h-3.26V10.38z"/>\
+                <path fill="rgb(53,198,244)" d="M85.54,2.22v3.56h3.09v2.61h-3.09v6.08 c0,1.7,0.42,2.55,1.67,2.55c0.59,0,0.9-0.02,1.27-0.14l0.05,2.65c-0.48,0.19-1.35,0.36-2.35,0.36c-1.22,0-2.19-0.42-2.8-1.14 c-0.71-0.8-1.03-2.07-1.03-3.89V8.38h-1.82V5.77h1.82V3.18L85.54,2.22z"/>\
+                <path fill="rgb(53,198,244)" d="M102.63,15.46c0,1.65,0.05,3.01,0.1,4.15H99.9l-0.16-2.08h-0.08 c-0.55,0.97-1.82,2.39-4.15,2.39s-4.47-1.5-4.47-6.02V5.77h3.25v7.53c0,2.3,0.69,3.78,2.41,3.78c1.32,0,2.17-0.97,2.48-1.87 c0.13-0.28,0.19-0.68,0.19-1.08V5.77h3.26V15.46z"/>\
+                <path fill="rgb(53,198,244)" d="M106.15,10.23c0-1.87-0.03-3.24-0.11-4.46h2.8l0.13,2.61h0.08 c0.63-1.93,2.14-2.92,3.54-2.92c0.32,0,0.51,0.03,0.77,0.08v3.27c-0.29-0.05-0.58-0.08-0.97-0.08c-1.53,0-2.62,1.05-2.91,2.64 c-0.05,0.31-0.08,0.68-0.08,1.06v7.18h-3.25V10.23z"/>\
+                <path fill="rgb(53,198,244)" d="M123.28,11.22c0.03-1.28-0.5-3.38-2.67-3.38 c-2.01,0-2.86,1.96-2.99,3.38H123.28z M117.62,13.67c0.08,2.5,1.9,3.58,3.97,3.58c1.5,0,2.56-0.25,3.57-0.62l0.48,2.39 c-1.12,0.51-2.65,0.88-4.5,0.88c-4.18,0-6.64-2.75-6.64-6.98c0-3.84,2.17-7.44,6.3-7.44c4.18,0,5.56,3.69,5.56,6.73 c0,0.65-0.05,1.17-0.11,1.48H117.62z"/>\
+                <g>\
+                    <path fill="rgb(53,198,244)" d="M130.56,7.49h0.21c0.3,0,0.48-0.01,0.55-0.04 c0.07-0.03,0.13-0.07,0.17-0.13c0.04-0.06,0.06-0.13,0.06-0.21c0-0.07-0.01-0.14-0.06-0.2c-0.04-0.06-0.1-0.1-0.17-0.13 c-0.07-0.03-0.26-0.04-0.55-0.04h-0.21V7.49z M130.04,9.04V6.31h0.51c0.48,0,0.75,0,0.81,0.01c0.17,0.01,0.3,0.05,0.39,0.1 c0.1,0.06,0.18,0.15,0.24,0.26c0.07,0.12,0.1,0.25,0.1,0.39c0,0.19-0.06,0.36-0.18,0.51c-0.11,0.13-0.28,0.22-0.49,0.26 c0.08,0.03,0.14,0.06,0.18,0.1c0.04,0.04,0.1,0.11,0.18,0.21c0.01,0.03,0.08,0.14,0.19,0.33l0.28,0.55h-0.64l-0.2-0.44 c-0.14-0.3-0.26-0.48-0.36-0.57c-0.1-0.07-0.22-0.11-0.36-0.11h-0.13v1.12H130.04z M131.13,5.59c-0.33,0-0.65,0.09-0.95,0.27 c-0.3,0.17-0.54,0.42-0.71,0.76c-0.17,0.33-0.26,0.68-0.26,1.04c0,0.36,0.08,0.71,0.25,1.03c0.17,0.33,0.41,0.59,0.71,0.77 c0.3,0.19,0.62,0.28,0.96,0.28c0.33,0,0.65-0.09,0.96-0.28c0.3-0.18,0.54-0.44,0.71-0.77c0.17-0.32,0.25-0.67,0.25-1.03 c0-0.36-0.09-0.71-0.26-1.04c-0.17-0.33-0.42-0.59-0.71-0.76C131.78,5.68,131.46,5.59,131.13,5.59z M131.13,5.08 c0.42,0,0.81,0.1,1.19,0.33c0.38,0.22,0.68,0.54,0.89,0.95c0.22,0.42,0.33,0.85,0.33,1.3s-0.11,0.88-0.32,1.29 c-0.22,0.41-0.51,0.73-0.89,0.96c-0.38,0.22-0.78,0.34-1.2,0.34c-0.42,0-0.82-0.12-1.2-0.34c-0.38-0.23-0.68-0.55-0.89-0.96 c-0.21-0.41-0.32-0.83-0.32-1.29s0.11-0.89,0.33-1.3c0.22-0.41,0.51-0.73,0.89-0.95C130.32,5.18,130.72,5.08,131.13,5.08z"/>\
+                </g>\
+            </svg>') no-repeat;
+        }
+
+        .play-pause-icon {
+            position: absolute;
+            height: 2rem;
+            width: 2rem;
+            left: 1.7rem;
+            top: 1rem;
+        }
+
+        .play-arrow-white-18dp {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100%" height="100%"><path d="M8 5v14l11-7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        }
+
+        .pause-white-18dp {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100%" height="100%"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        }
+
+        .controls-icon {
+            position: relative;
+            height: 1.3rem;
+            width: 1.3rem;
+            top: .5rem;
+        }
+
+        .volume-icon-container {
+            left: .5rem;
+        }
+
+        .volume-mute-white-18dp {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100%" height="100%"><path d="M7 9v6h4l5 5V4l-5 5H7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        }
+
+        .volume-off-white-18dp {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100%" height="100%"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        }
+
+        .volume-down-white-18dp {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100%" height="100%"><path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        }
+
+        .volume-up-white-18dp {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100%" height="100%"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        }
+
+        .replay-10 {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100%" height="100%"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8zm-1.1 11h-.85v-3.26l-1.01.31v-.69l1.77-.63h.09V16zm4.28-1.76c0 .32-.03.6-.1.82s-.17.42-.29.57-.28.26-.45.33-.37.1-.59.1-.41-.03-.59-.1-.33-.18-.46-.33-.23-.34-.3-.57-.11-.5-.11-.82v-.74c0-.32.03-.6.1-.82s.17-.42.29-.57.28-.26.45-.33.37-.1.59-.1.41.03.59.1.33.18.46.33.23.34.3.57.11.5.11.82v.74zm-.85-.86c0-.19-.01-.35-.04-.48s-.07-.23-.12-.31-.11-.14-.19-.17-.16-.05-.25-.05-.18.02-.25.05-.14.09-.19.17-.09.18-.12.31-.04.29-.04.48v.97c0 .19.01.35.04.48s.07.24.12.32.11.14.19.17.16.05.25.05.18-.02.25-.05.14-.09.19-.17.09-.19.11-.32.04-.29.04-.48v-.97z"/></svg>');
+        }
+
+        .keyboard-arrow-right-white-18dp {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100%" height="100%"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>');
+            transition: 200ms;
+        }
+
+        .icon-rotate-right {
+            -o-transform: rotate(0deg);
+            -ms-transform: rotate(0deg);
+            -moz-transform: rotate(0deg);
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+
+        .icon-rotate-left {
+            -o-transform: rotate(180deg);
+            -ms-transform: rotate(180deg);
+            -moz-transform: rotate(180deg);
+            -webkit-transform: rotate(180deg);
+            transform: rotate(180deg);
+        }
+    </style>
+    <!-- Seek Slider -->
+    <style>
+        .seek-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 0.1rem;
+            background: #7F8185;
+            outline: none;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .seek-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 0.9rem;
+            height: 0.9rem;
+            border-radius: 100%;
+            background: #57c5f7;
+            cursor: pointer;
+        }
+    </style>
+    <!-- Volume Slider -->
+    <style>
+        .volume-slider-container {
+            position: absolute;
+            margin-left: 2.5rem;
+            padding-top: 0.8rem;
+            cursor: pointer;
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            width: 6.5rem;
+            height: .3rem;
+            background: #666;
+            outline: none;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 100%;
+            background: #57c5f7;
+            cursor: pointer;
+        }
+    </style>
+    <!-- Sidebar Tab Toggle -->
+    <style>
+        .sidebar-tab-toggle-container {
+            width: 3rem;
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: #F7F7F7;
+            z-index: 4;
+        }
+
+        .tab {
+            width: 1.7rem;
+            height: 12rem;
+            top: calc(50% - 0.5 * (5rem + 12rem));
+            position: absolute;
+            background-color: #3FB9E8;
+            z-index: 12;
+            cursor: default;
+            opacity: 0;
+            transition: opacity 250ms ease-in;
+        }
+
+        .tab:before {
+            display: block;
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 1.7rem solid transparent;
+            border-right: 1.7rem solid transparent;
+            position: absolute;
+            z-index: 13;
+            top: calc(50% - 6rem);
+            border-top: 1.7rem solid #F7F7F7;
+        }
+
+        .tab:after {
+            display: block;
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 1.7rem solid transparent;
+            border-right: 1.7rem solid transparent;
+            position: absolute;
+            z-index: 13;
+            bottom: calc(50% - 6rem);
+            border-bottom: 1.7rem solid #F7F7F7;
+        }
+
+        .tab:hover:before {
+            top: calc(50% - 6.1rem);
+        }
+
+        .tab:hover:after {
+            bottom: calc(50% - 6.1rem);
+        }
+
+        .tab-open {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        .tab-icon {
+            display: block;
+            height: 2.5rem;
+            width: 2.5rem;
+            left: -.4rem;
+            position: absolute;
+            top: calc(50% - 1.5rem);
+        }
+    </style>
+    <!-- Sidebar -->
+    <style>
+        .side-panel-common {
+            position: absolute;
+            width: 23rem;
+            bottom: 0;
+            overflow-x: hidden;
+            top: 0;
+            transition: right 200ms cubic-bezier(0.4, 0.25, 0.75, 0.6);
+        }
+
+        .side-panel {
+            right: -32rem;
+            z-index: 2;
+        }
+
+        .side-panel-open {
+            right: 3rem;
+            z-index: 3;
+        }
+
+        .aside-container {
+            width: 22rem;
+            margin-left: 1rem;
+            height: 100%;
+            box-sizing: border-box;
+            background: #ffffff
+        }
+
+        .aside-content-extra {
+            height: calc(100% - 3rem);
+        }
+    </style>
+    <!-- Summary -->
+    <style>
+        .summary-outer-container {
+            position: relative;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .summary-title {
+            height: 3rem;
+            line-height: 3rem;
+            color: #FFF;
+            background-color: #3FB9E8;
+            font-size: 1.2rem;
+            font-weight: lighter;
+            padding-left: 1rem;
+        }
+
+        .summary-container {
+            position: relative;
+            height: 100%;
+            box-sizing: border-box;
+            border: 0.1rem solid #E5E5E5;
+            border-top: none;
+            overflow: hidden;
+        }
+
+        .summary-scroll {
+            height: calc(100% + 0rem);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .summary-padding {
+            padding: 1rem 0;
+        }
+    </style>
+    <!-- Summary Item -->
+    <style>
+        .detail {
+            padding: 0.5rem 1rem;
+            box-sizing: border-box;
+        }
+
+        .detail-term {
+            text-transform: uppercase;
+            color: #AFAFAF;
+            font-size: 0.7rem;
+        }
+
+        .detail-text {
+            font-size: 1rem;
+            line-height: 1.5rem;
+            font-weight: normal;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body class="background">
+<script type="text/javascript">
+    var playing = false;
+    var muted = false;
+    var sidebarOpen = false;
+
+    function toggleSidebar() {
+        sidebarOpen = !sidebarOpen;
+
+        document.getElementById('mainClass').className =
+            "main-common flex-vertical " + (sidebarOpen ? "main-with-sidebar" : "main");
+
+        document.getElementById('sideClass').className =
+            "side-panel-common " + (sidebarOpen ? "side-panel-open" : "side-panel");
+
+        document.getElementById('tab-icon').className = "tab-icon keyboard-arrow-right-white-18dp "
+            + (sidebarOpen ? "icon-rotate-left" : "icon-rotate-right");
+    }
+
+    function togglePlay() {
+        playing = !playing;
+        var elements = document.getElementsByTagName('video');
+        for (var i = 0; i < elements.length; i++) {
+            var video = elements[i];
+            playing ? video.play() : video.pause();
+        }
+        // Show option that is not active
+        document.getElementById('play-pause').className = "play-pause-icon " + (playing ? "pause-white-18dp" : "play-arrow-white-18dp");
+    }
+
+    function toggleMute() {
+        muted = !muted;
+        var elements = document.getElementsByTagName('video');
+        // Only mute/unmute the first feed
+        elements[0].muted = muted;
+        updateVolumeIcon(elements[0].volume);
+    }
+
+    function updateVolumeIcon(volume) {
+        var volumeIcon = "controls-icon ";
+
+        if (muted) {
+            volumeIcon += "volume-off-white-18dp";
+        } else {
+            if (volume > 0.5) {
+                volumeIcon += "volume-up-white-18dp";
+            } else if (volume > 0.0) {
+                volumeIcon += "volume-down-white-18dp";
+            } else {
+                volumeIcon += "volume-mute-white-18dp";
+            }
+        }
+
+        document.getElementById('mute').className = volumeIcon;
+    }
+
+    function replay() {
+        var videos = document.getElementsByTagName('video');
+        for (var i = 0; i < videos.length; i++) {
+            var currentTime = videos[i].currentTime;
+            videos[i].currentTime = Math.max(0, currentTime - 10);
+        }
+    }
+
+    function zeroPad(string) {
+        return (new Array(3).join('0') + string).slice(-2);
+    }
+
+    function formatDuration(duration) {
+        var hours = Math.floor(duration / 3600);
+        var minutes = Math.floor((duration % 3600) / 60);
+        var seconds = Math.round(duration % 60);
+
+        var durationString = zeroPad(minutes) + ":" + zeroPad(seconds);
+
+        if (hours > 0) {
+            durationString = zeroPad(hours) + ":" + durationString;
+        }
+
+        return durationString;
+    }
+
+    window.onload = function () {
+        if (!window.chrome) {
+            var modal = document.getElementById('chromium-warning');
+            modal.style.display = "block"
+            document.getElementById("modal-close").onclick = function () {
+                modal.style.display = "none";
+            }
+        }
+
+        var videos = document.getElementsByTagName('video');
+
+        // Playback time labels
+        const duration = document.getElementById("duration");
+        const currentTime = document.getElementById('current-time');
+
+        duration.innerText = formatDuration(videos[0].duration);
+
+        // Sliders
+        const seekBar = document.getElementById("seek-slider");
+        const volumeBar = document.getElementById("volume-slider");
+
+        for (var i = 0; i < videos.length; i++) {
+            // Only play audio from first feed
+            if(i > 0) {
+                videos[i].muted = true;
+            }
+
+            (function (video) {
+                // Playback
+                var playbackUpdateListener = function () {
+                    video.currentTime = video.duration * (seekBar.value / 100);
+                };
+                seekBar.addEventListener("input", playbackUpdateListener);
+                seekBar.addEventListener("change", playbackUpdateListener); // For IE11
+
+                // Update the seek bar as the video plays
+                video.addEventListener("timeupdate", function () {
+                    // Calculate the slider value
+                    // Update the slider value
+                    seekBar.value = (100 / video.duration) * video.currentTime;
+
+                    currentTime.innerText = formatDuration(video.currentTime);
+                });
+                // Pause the video when the slider handle is being dragged
+                seekBar.addEventListener("mousedown", function () {
+                    video.pause();
+                });
+
+                // Play the video when the slider handle is dropped, unless it paused before it was clicked
+                seekBar.addEventListener("mouseup", function () {
+                    if (playing) {
+                        video.play();
+                    }
+                });
+
+                // Volume
+                var volumeUpdateListener = function () {
+                    if (muted) {
+                        toggleMute();
+                    }
+                    // Update the video volume
+                    // Using values 0-100 and scaling down bc IE11 tooltips show whole numbers only
+                    var volume = volumeBar.value / 100.0;
+                    video.volume = volume;
+                    updateVolumeIcon(volume);
+                };
+                volumeBar.addEventListener("input", volumeUpdateListener);
+                volumeBar.addEventListener("change", volumeUpdateListener); // For IE11
+            })(videos[i]);
+        }
+    }
+</script>
+<!-- SessionViewer-->
+<div class="logo sim-capture-logo" style="display: block"></div>
+<img class="logo" style="display: none" src="live-capture-logo.png"/>
+<div id="session-viewer" class="session-viewer">
+    <div id="mainClass" class="main-common flex-vertical main">
+        <header class="header-in-video font">teste nuno</header>
+        <div class="player">
+            <!-- ViewerPlayer -->
+            <div class="container-without-bar">
+                <div class="video">
+                    <div class="layout-util-container layout-horizontal">
+                        <div class="layout-horizontal-inner">
+                            <div class="html-video-one-wrapper">
+                                <video
+                                        width=100%
+                                        height=100%
+                                        src="SimCap02_220104_1124_C200_f03d5329b7684bdb8d55719581cf4e87.m4v">
+                                </video>
+                            </div>
+                        </div>
+                        <div class="layout-horizontal-inner">
+                            <div class="html-video-one-wrapper">
+                                <video
+                                        width=100%
+                                        height=100%
+                                        src="SimCap02_220104_1124_C201_f03d5329b7684bdb8d55719581cf4e87.m4v">
+                                </video>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="viewer-track-bar-container">
+                    <div class="play-pause" onclick="togglePlay()">
+                        <span id="play-pause" class="play-pause-icon play-arrow-white-18dp"></span>
+                    </div>
+                    <div class="track-bar">
+                        <div class="track-bar-container">
+                            <input id="seek-slider" class="seek-slider" type="range" value="0"/>
+                        </div>
+                    </div>
+                    <div class="controls-left">
+                        <div class="track-bar-button-container">
+                            <div class="icon-box-container">
+                                <span id="replay" class="controls-icon replay-10" style="text-align: center"
+                                      onclick="replay()"></span>
+                            </div>
+                        </div>
+                        <div class="volume-menu">
+                            <div class="track-bar-button-container">
+                                <div class="icon-box-container volume-icon-container">
+                                    <span id="mute" class="controls-icon volume-up-white-18dp"
+                                          style="text-align: center" onclick="toggleMute()"></span>
+                                </div>
+                            </div>
+                            <div class="volume-slider-container">
+                                <input id="volume-slider" class="volume-slider" type="range"/>
+                            </div>
+                        </div>
+                        <div class="time font">
+                            <time id="current-time" dateTime={dateTimeString}>00:00</time>
+                            <span>
+                                <span>/</span>
+                                <time id="duration" dateTime={dateTimeString}>00:00</time>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sideClass" class="side-panel-common side-panel">
+        <aside id="asideClass" class="aside-container">
+            <div class="aside-content-extra">
+                <section class="summary-outer-container">
+                    <header class="summary-title font">
+                        <div>Summary</div>
+                    </header>
+                    <section class="summary-container">
+                        <div class="summary-scroll">
+                            <div class="summary-padding">
+                                <div class="detail">
+                                    <div class="detail-term font">Session Title</div>
+                                    <div class="detail-text font">teste nuno</div>
+                                </div>
+                                <div class="detail">
+                                    <div class="detail-term font">Organization</div>
+                                    <div class="detail-text font">Hospital da Luz Learning Health</div>
+                                </div>
+                                <div class="detail">
+                                    <div class="detail-term font">Location</div>
+                                    <div class="detail-text font">Consulta 02</div>
+                                </div>
+                                <div class="detail">
+                                    <div class="detail-term font">Date</div>
+                                    <div class="detail-text font">Tuesday, January 4, 2022</div>
+                                </div>
+                                <div class="detail">
+                                    <div class="detail-term font">Session Start</div>
+                                    <div class="detail-text font">11:24 AM</div>
+                                </div>
+                                <div class="detail">
+                                    <div class="detail-term font">Session End</div>
+                                    <div class="detail-text font">11:25 AM</div>
+                                </div>
+                                <div class="detail">
+                                    <div class="detail-term font">Session Notes</div>
+                                    <div class="detail-text font">None</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </aside>
+    </div>
+    <div class="sidebar-tab-toggle-container">
+        <div class="tab tab-open" onclick="toggleSidebar()">
+            <span id="tab-icon" class="tab-icon keyboard-arrow-right-white-18dp"></span>
+        </div>
+    </div>
+</div>
+<div id="chromium-warning" class="warning-modal" style="display: none">
+    <div class="warning-modal-content">
+        <div class="warning-white-18dp"></div>
+        <p class="warning-modal-text font">This is an unsupported browser. Please use Google Chrome for an optimal experience.</p>
+        <span id="modal-close" class="close">&times;</span>
+    </div>
+</div>
+</body>
+</html>
