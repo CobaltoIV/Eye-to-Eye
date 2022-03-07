@@ -43,8 +43,10 @@ def get_result(x, y, confidence, boundaries):
         return "Screen"
 
 def doc_classification(res, x ,y, doc, mode, date):
-    """Function that alters classification given ini function of doctor maneurisms during consultation
+    """Function that alters classification given in function of doctor maneurisms during consultation
     """
+    day = date['d']
+    month = date['m']
     #Neurologia
     if doc == 'D1' and mode == 'Presential':
         if res == 'Left Of Screen' and y > 5.0:
@@ -82,6 +84,13 @@ def doc_classification(res, x ,y, doc, mode, date):
         elif res == 'Right Of Screen' or res == 'not_in_frame':
             res = 'Patient'
         if res == 'Left Of Screen':
+            res = 'Screen'
+    elif doc == 'D2' and mode == 'Virtual' and day == '04' and month == '03':
+        if y > 3.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
             res = 'Screen'
     elif doc == 'D3' and mode == 'Virtual':
         if res == 'Left Of Screen' and y > 1.0:
