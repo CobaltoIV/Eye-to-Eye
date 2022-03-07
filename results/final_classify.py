@@ -42,11 +42,21 @@ def get_result(x, y, confidence, boundaries):
     else:
         return "Screen"
 
-def doc_classification(res, x ,y, doc, mode):
-    """Function that alters classification given ini function of doctor maneurisms during consultation
+def doc_classification(res, x ,y, doc, mode, date):
+    """Function that alters classification given in function of doctor maneurisms during consultation
     """
+    day = date['d']
+    month = date['m']
+    #Neurologia
     if doc == 'D1' and mode == 'Presential':
         if res == 'Left Of Screen' and y > 5.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D8' and mode == 'Presential':
+        if res == 'Left Of Screen' and y > 2.0:
             res = 'Keyboard'
         elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
@@ -55,11 +65,10 @@ def doc_classification(res, x ,y, doc, mode):
     elif doc == 'D2' and mode == 'Presential':
         if res == 'Left Of Screen' and x > -1.5 and y > 5.0:
             res = 'Keyboard'
-        elif res == 'Left Of Screen' and x < -1.5 and y > 10.0:
+        elif res == 'Left Of Screen' and x < -1.5 and y > 8.0:
             res = 'Keyboard'
         elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
-        
         if res == 'Right Of Screen':
             res = 'Screen'
     elif doc == 'D11' and mode == 'Presential':
@@ -67,7 +76,27 @@ def doc_classification(res, x ,y, doc, mode):
             res = 'Keyboard'
         elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
-        
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D7' and mode =='Presential':
+        if res == 'Right Of Screen' and x < 1 and y > 1.0:
+            res == 'Keyboard'
+        elif res == 'Right Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Left Of Screen':
+            res = 'Screen'
+    elif doc == 'D2' and mode == 'Virtual' and day == '04' and month == '03':
+        if y > 3.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D3' and mode == 'Virtual':
+        if res == 'Left Of Screen' and y > 1.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
         if res == 'Right Of Screen':
             res = 'Screen'
     elif doc == 'D9' and mode == 'Virtual':
@@ -87,6 +116,8 @@ def doc_classification(res, x ,y, doc, mode):
     elif doc == 'D12' and mode == 'Virtual':
         if res == 'Left Of Screen' and y > 2.0:
             res = 'Keyboard'
+        elif res == 'Left Of Screen' and x > -0.5:
+            res = 'Screen'
         elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
         if res == 'Right Of Screen':
@@ -98,7 +129,7 @@ def doc_classification(res, x ,y, doc, mode):
             res = 'Patient'
         if res == 'Right Of Screen':
             res = 'Screen'
-    else:
+    elif mode == "Virtual":
         if res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
         if res == 'Right Of Screen':
@@ -142,7 +173,7 @@ def get_coord_screen(res, x, y, monitor_W, monitor_H):
         return ["not_valid", "not_valid"]
 
 
-def add_columns(row, monitor_W, monitor_H, fps, gaze360_bounds, doc,mode):
+def add_columns(row, monitor_W, monitor_H, fps, gaze360_bounds, doc,mode, date):
     """Function applied to data to classify and process all samples
     """
     gaze360_x = row["gaze360_x"]
@@ -155,7 +186,7 @@ def add_columns(row, monitor_W, monitor_H, fps, gaze360_bounds, doc,mode):
     
     gaze360_res = get_result(gaze360_x, gaze360_y, confidence, gaze360_bounds)
     
-    gaze360_res = doc_classification(gaze360_res,gaze360_x,gaze360_y, doc, mode)
+    gaze360_res = doc_classification(gaze360_res,gaze360_x,gaze360_y, doc, mode, date)
     
     gaze360_2d = [gaze360_x*monitor_W, gaze360_y*monitor_H]
     
@@ -184,18 +215,22 @@ def main(args):
     
     str = name.split('_')
     doc = str[0]
-    mode = str[1].split('-')[0]
+    timestamp  = str[1].split('-')
+    mode = timestamp[0]
+    date = {'d': timestamp[1], 'm': timestamp[2], 'y': timestamp[3]}
     # Video fps
     fps = 15
     print(name)
     print(doc)
     print(mode)
+    print(date)
     print(gaze360_b.x0)
     print(gaze360_b.x1)
     print(gaze360_b.y0)
     print(gaze360_b.y1)
     nm = ["frame", "f_found", "f_confidence", "facex", "facey", "facez",
         "2d_x", "2d_y", "3d_x", "3d_y", "3d_z"]
+    
     # Load samples from .csv
     gaze_360_out = f'{args.consult_folder}/{name}_gaze360_out.csv'
 
@@ -215,7 +250,7 @@ def main(args):
    
 
 
-    df_combined[['timestamp', 'gaze360_res', '2d_gaze360_x', '2d_gaze360_y']] =df_combined.apply(add_columns,args=(W, H, fps, gaze360_b, doc,mode), axis=1, result_type='expand')
+    df_combined[['timestamp', 'gaze360_res', '2d_gaze360_x', '2d_gaze360_y']] =df_combined.apply(add_columns,args=(W, H, fps, gaze360_b, doc,mode, date), axis=1, result_type='expand')
         
     df_combined[['timestamp', 'gaze360_res', 'gaze360_x', 'gaze360_y']].to_csv(args.output_file)
     

@@ -29,16 +29,16 @@ def main(args):
     virtual_data = df_virtual['Patient_Percentage'].round(4)
     
     
-    df =  pd.concat([df_presential[['Patient_Percentage', 'type']].round(4),df_virtual[['Patient_Percentage', 'type']].round(4)], ignore_index=True)
+    df =  pd.concat([df_presential[['Patient_Percentage', 'type']].round(4),df_virtual[['Patient_Percentage', 'type']].round(3)], ignore_index=True)
     df['Doctor'] = 'D1'
     normal_test(presential_data)
     normal_test(virtual_data)
     
     print(levene(presential_data,  virtual_data))
     
-    print(df)
+    #print(df)
     U1, p = mannwhitneyu(presential_data, virtual_data, method='auto')
-    print('Statistics=%.3f, p=%.3f' % (U1, p))
+    print('Statistics=%.3f, p=%.6f' % (U1, p))
     U2 = 20*20-U1
     z = (U1 + 0.5) - ((U1+U2)/2)/sqrt((20*20*(20+20+1))/12)
     
