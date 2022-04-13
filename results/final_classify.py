@@ -103,14 +103,14 @@ def doc_classification(res, x ,y, doc, mode, date):
         if res == 'Left Of Screen':
             res = 'Screen'
     elif doc == 'D3' and mode =='Presential':
-        if y > 2.5:
+        if y > 1.5:
             res = 'Keyboard'
         elif res == 'Right Of Screen' or res == 'not_in_frame':
             res = 'Patient'
         if res == 'Left Of Screen':
             res = 'Screen'
     elif doc == 'D10' and mode =='Presential':
-        if y > 1:
+        if y > 2:
             res = 'Keyboard'
         elif res == 'Right Of Screen' or res == 'not_in_frame':
             res = 'Patient'
@@ -125,7 +125,31 @@ def doc_classification(res, x ,y, doc, mode, date):
         if res == 'Right Of Screen' or res == 'not_in_frame':
             res = 'Patient'
         if res == 'Left Of Screen':
-            res = 'Screen'        
+            res = 'Screen'    
+    elif doc == 'D6' and mode =='Presential':
+        if y > 1.5:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'    
+    elif doc == 'D12' and mode =='Presential':
+        if res == 'Left  Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'    
+    elif doc == 'D14' and mode =='Presential':
+        if res == 'Left  Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'    
+    elif doc == 'D9' and mode =='Presential':
+        if y > 5.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'    
     elif doc == 'D2' and mode == 'Virtual' and day == '04' and month == '03':
         if y > 3.0:
             res = 'Keyboard'
