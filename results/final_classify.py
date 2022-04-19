@@ -1,10 +1,8 @@
-from asyncio import FastChildWatcher
 import pandas as pd
 import datetime
 import argparse
-import math
-from pandas.core import frame
 import cv2
+
 
 class bounds:
     def __init__(self, x0,x1,y0,y1):
@@ -56,7 +54,7 @@ def doc_classification(res, x ,y, doc, mode, date):
         if res == 'Right Of Screen':
             res = 'Screen'
     elif doc == 'D8' and mode == 'Presential':
-        if res == 'Left Of Screen' and y > 2.0:
+        if res == 'Left Of Screen' and y > 3.0:
             res = 'Keyboard'
         elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
@@ -103,7 +101,7 @@ def doc_classification(res, x ,y, doc, mode, date):
         if res == 'Left Of Screen':
             res = 'Screen'
     elif doc == 'D3' and mode =='Presential':
-        if y > 1.5:
+        if y > 2:
             res = 'Keyboard'
         elif res == 'Right Of Screen' or res == 'not_in_frame':
             res = 'Patient'
@@ -143,14 +141,7 @@ def doc_classification(res, x ,y, doc, mode, date):
             res = 'Patient'
         if res == 'Right Of Screen':
             res = 'Screen'    
-    elif doc == 'D9' and mode =='Presential' and day == '07':
-        if y > 5.0:
-            res = 'Keyboard'
-        elif res == 'Left Of Screen' or res == 'not_in_frame':
-            res = 'Patient'
-        if res == 'Right Of Screen':
-            res = 'Screen'    
-    elif doc == 'D9' and mode =='Presential' and day == '14':
+    elif doc == 'D9' and mode =='Presential':
         if y > 2.5:
             res = 'Keyboard'
         elif res == 'Left Of Screen' or res == 'not_in_frame':
@@ -192,7 +183,8 @@ def doc_classification(res, x ,y, doc, mode, date):
             res = 'Patient'
         if res == 'Right Of Screen':
             res = 'Screen'
-    elif doc == 'D12' and mode == 'Virtual':
+    elif doc == 'D12' and mode == 'Virtual':\
+        
         if res == 'Left Of Screen' and y > 2.0:
             res = 'Keyboard'
         elif res == 'Left Of Screen' and x > -0.5:
