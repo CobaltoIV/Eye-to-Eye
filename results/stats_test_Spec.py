@@ -3,6 +3,7 @@ import seaborn as sns
 from math import sqrt
 from scipy.stats import shapiro, mannwhitneyu, levene
 import matplotlib.pyplot as plt
+from matplotlib.ticker import PercentFormatter
 import argparse
 import pandas as pd
 
@@ -51,24 +52,33 @@ def get_percentages(d):
 
 def main(args):
 
-    # Neurology
-    doctor_lst = ['D1', 'D2', 'D8']
-    # MedGeral
-    #doctor_lst = ['D4', 'D5', 'D7', 'D16']
-    # Endocrinology
-    #doctor_lst = ['D3', 'D10', 'D15']
-    # Ginecology
-    #doctor_lst = ['D6', 'D9', 'D12', 'D14']
+    doctor_dic = {'Neurology': ['D1', 'D2', 'D8'],
+                  'MedGeral': ['D4', 'D5', 'D7', 'D16'],
+                  'Endocrinology': ['D3', 'D10', 'D15'],
+                  'Ginecology': ['D6', 'D9', 'D12', 'D14']}
+    doctor_lst = doctor_dic[args.spec]
+    df = pd.DataFrame()
     for d in doctor_lst:
         df_presential, df_virtual = get_percentages(d)
-        df = pd.concat([df_presential[['Patient_Percentage', 'type', 'Doctor']].round(
-            4), df_virtual[['Patient_Percentage', 'type', 'Doctor']].round(3)], ignore_index=True)
 
-    sns.violinplot(y='Patient_Percentage', x='Doctor',
-                   hue='type', data=df, split=True, showmedians=True)
+        mann_whit_test(df_presential['Patient_Percentage'].round(
+            4), df_virtual['Patient_Percentage'].round(4))
+
+        df_d = pd.concat([df_presential[['Patient_Percentage', 'type', 'Doctor']].round(
+            4), df_virtual[['Patient_Percentage', 'type', 'Doctor']].round(3)], ignore_index=True)
+        df = pd.concat([df, df_d])
+
+    full_p_data = df.loc[df['type'] == 'Presential']['Patient_Percentage']
+    full_v_data = df.loc[df['type'] == 'Virtual']['Patient_Percentage']
+
+    mann_whit_test(full_p_data, full_v_data)
+
+    ax = sns.violinplot(x='Doctor', y='Patient_Percentage',
+                        hue='type', data=df, split=True)
 
     plt.title(args.spec)
     plt.ylabel("Patient %")
+    ax.yaxis.set_major_formatter(PercentFormatter(1))
 
     plt.show()
 
@@ -77,7 +87,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Process gaze output csv file')
 
-    parser.add_argument('-s', '--Spec', type=str,
+    parser.add_argument('-s', '--spec', type=str,
                         help="Medical Specialty")
 
     args = parser.parse_args()
