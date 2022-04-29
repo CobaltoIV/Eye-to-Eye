@@ -21,8 +21,8 @@ def normal_test(data):
 
 
 def mann_whit_test(p_data, v_data):
-    print(p_data.describe())
-    print(v_data.describe())
+    print("Presential Median" + str(p_data.median()))
+    print("Virtual Median" + str(v_data.median()))
 
     U1, p = mannwhitneyu(p_data, v_data,
                          alternative="two-sided")
@@ -41,9 +41,10 @@ def get_percentages(d):
     df_presential = pd.read_csv(presential_stats, index_col=0)
     df_virtual = pd.read_csv(virtual_stats, index_col=0)
 
-    df_presential['type'] = 'Presential'
+    df_presential['type'] = 'Face-to-Face'
     df_virtual['type'] = 'Virtual'
-
+    if d == 'D8':
+        d = 'D3'
     df_presential['Doctor'] = d
     df_virtual['Doctor'] = d
 
@@ -68,7 +69,7 @@ def main(args):
             4), df_virtual[['Patient_Percentage', 'type', 'Doctor']].round(3)], ignore_index=True)
         df = pd.concat([df, df_d])
 
-    full_p_data = df.loc[df['type'] == 'Presential']['Patient_Percentage']
+    full_p_data = df.loc[df['type'] == 'Face-to-Face']['Patient_Percentage']
     full_v_data = df.loc[df['type'] == 'Virtual']['Patient_Percentage']
 
     mann_whit_test(full_p_data, full_v_data)
