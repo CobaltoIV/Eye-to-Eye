@@ -1,4 +1,3 @@
-from ast import arg
 import seaborn as sns
 from math import sqrt
 from scipy.stats import shapiro, mannwhitneyu, levene
