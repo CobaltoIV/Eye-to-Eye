@@ -6,14 +6,14 @@
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Genecologia/D12/Presential/19-04-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Genecologia/D14/Presential/12-04-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Genecologia/D14/Virtual/22-04-2022
-#bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Genecologia/D14/Virtual/01-04-2022
+bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Genecologia/D14/Virtual/29-04-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D4/Virtual/21-04-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D4/Virtual/07-04-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D4/Virtual/24-03-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D4/Virtual/26-03-2022
-bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D4/Virtual/28-04-2022
-bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D7/Virtual/28-04-2022
-bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D16/Virtual/28-04-2022
+#bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D4/Virtual/28-04-2022
+#bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D7/Virtual/28-04-2022
+#bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D16/Virtual/28-04-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D16/Virtual/29-03-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D16/Virtual/07-04-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D16/Virtual/15-03-2022
@@ -29,7 +29,7 @@ bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D16
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Endocrinologia/D10/Presential/25-03-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Genecologia/D14/Presential/08-04-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Neurologia/D11/Virtual/22-04-2022
-bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Neurologia/D11/Virtual/25-03-2022
+#bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Neurologia/D11/Virtual/25-03-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Neurologia/D8/Virtual/06-04-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/Neurologia/D8/Presential/23-02-2022
 
