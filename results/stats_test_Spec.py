@@ -20,8 +20,8 @@ def normal_test(data):
 
 
 def mann_whit_test(p_data, v_data):
-    print("Presential Median" + str(p_data.median()))
-    print("Virtual Median" + str(v_data.median()))
+    print("Presential Median: " + str(p_data.median()))
+    print("Virtual Median: " + str(v_data.median()))
 
     U1, p = mannwhitneyu(p_data, v_data,
                          alternative="two-sided")
@@ -42,8 +42,7 @@ def get_percentages(d):
 
     df_presential['type'] = 'Face-to-Face'
     df_virtual['type'] = 'Virtual'
-    if d == 'D8':
-        d = 'D3'
+
     df_presential['Doctor'] = d
     df_virtual['Doctor'] = d
 
@@ -59,6 +58,7 @@ def main(args):
     doctor_lst = doctor_dic[args.spec]
     df = pd.DataFrame()
     for d in doctor_lst:
+        print(d)
         df_presential, df_virtual = get_percentages(d)
 
         mann_whit_test(df_presential['Patient_Percentage'].round(
@@ -68,6 +68,7 @@ def main(args):
             4), df_virtual[['Patient_Percentage', 'type', 'Doctor']].round(3)], ignore_index=True)
         df = pd.concat([df, df_d])
 
+    print('Joint Test')
     full_p_data = df.loc[df['type'] == 'Face-to-Face']['Patient_Percentage']
     full_v_data = df.loc[df['type'] == 'Virtual']['Patient_Percentage']
 
