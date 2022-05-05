@@ -141,7 +141,9 @@ def doc_classification(res, x, y, doc, mode, date):
         if res == 'Right Of Screen':
             res = 'Screen'
     elif doc == 'D14' and mode == 'Presential':
-        if res == 'Left Of Screen' or res == 'not_in_frame':
+        if y > 2.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'
         if res == 'Right Of Screen':
             res = 'Screen'
@@ -198,6 +200,46 @@ def doc_classification(res, x, y, doc, mode, date):
             res = 'Screen'
     elif doc == 'D13' and mode == 'Virtual':
         if res == 'Left Of Screen' and y > 2.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D14' and mode == 'Virtual' and (day == '29' or day == '22' or day == '25'):
+        if y > 2.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D14' and mode == 'Virtual':
+        if res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D16' and mode == 'Virtual' and (day == '04' or day == '07' or day == '08' or day == '14' or day == '15' or day == '22' or day == '23'):
+        if y > 2.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D16' and mode == 'Virtual' and day == '21':
+        if y > 1.3:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D16' and mode == 'Virtual' and day == '29':
+        if y > 3.0:
+            res = 'Keyboard'
+        elif res == 'Left Of Screen' or res == 'not_in_frame':
+            res = 'Patient'
+        if res == 'Right Of Screen':
+            res = 'Screen'
+    elif doc == 'D16' and mode == 'Virtual' and day == '30':
+        if y > 2.0:
             res = 'Keyboard'
         elif res == 'Left Of Screen' or res == 'not_in_frame':
             res = 'Patient'

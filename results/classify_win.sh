@@ -1,6 +1,6 @@
 #!/bin/bash
-rm D6/Virtual/proc_res/Totals/Stats.csv
-for file in D6/Virtual/*.csv; do 
+rm D7/Presential/proc_res/Totals/Stats.csv
+for file in D7/Presential/*.csv; do 
 	echo "Process $(basename $file)"   
     full=$(basename $file)
     pat='[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]'
@@ -8,6 +8,6 @@ for file in D6/Virtual/*.csv; do
     date=${BASH_REMATCH[0]}
     suffix="_gaze360_out.csv"
     f=${full%"$suffix"}
-    python final_classify.py -i $f -d D6/Virtual -c ../Calib/openfiles/$date/Virtual/*
+    python final_classify.py -i $f -d D7/Presential -c ../Calib/openfiles/$date/Presential/*
 done
    

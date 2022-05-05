@@ -58,6 +58,7 @@ def main(args):
     doctor_lst = doctor_dic[args.spec]
     df = pd.DataFrame()
     for d in doctor_lst:
+        print(d)
         df_presential, df_virtual = get_percentages(d)
 
         mann_whit_test(df_presential['Patient_Percentage'].round(
@@ -67,6 +68,7 @@ def main(args):
             4), df_virtual[['Patient_Percentage', 'type', 'Doctor']].round(3)], ignore_index=True)
         df = pd.concat([df, df_d])
 
+    print('Joint Test')
     full_p_data = df.loc[df['type'] == 'Face-to-Face']['Patient_Percentage']
     full_v_data = df.loc[df['type'] == 'Virtual']['Patient_Percentage']
 
