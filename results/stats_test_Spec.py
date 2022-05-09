@@ -53,7 +53,7 @@ def main(args):
 
     doctor_dic = {'Neurology': ['D1', 'D2', 'D8'],
                   'MedGeral': ['D4', 'D5', 'D7', 'D16'],
-                  'Endocrinology': ['D3', 'D10', 'D15'],
+                  'Endocrinology': ['D3', 'D10'],
                   'Ginecology': ['D6', 'D9', 'D12', 'D14']}
     doctor_lst = doctor_dic[args.spec]
     df = pd.DataFrame()
