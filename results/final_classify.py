@@ -110,7 +110,7 @@ def doc_classification(res, x, y, doc, mode, date):
         if res == 'Left Of Screen':
             res = 'Screen'
     elif doc == 'D10' and mode == 'Presential':
-        if y > 2:
+        if y > 3:
             res = 'Keyboard'
         elif res == 'Right Of Screen' or res == 'not_in_frame':
             res = 'Patient'
