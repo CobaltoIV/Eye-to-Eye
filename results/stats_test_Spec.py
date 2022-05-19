@@ -78,6 +78,8 @@ def main(args):
                         hue='type', data=df, split=True)
 
     plt.title(args.spec)
+    if args.spec == 'MedGeral':
+        plt.title('General and Family Medicine')
     plt.ylabel("Patient %")
     ax.yaxis.set_major_formatter(PercentFormatter(1))
 
