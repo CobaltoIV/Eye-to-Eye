@@ -8,6 +8,11 @@ import pandas as pd
 
 
 def normal_test(data):
+    """Perform the shapiro test to check normality
+
+    Args:
+        data (array_like): Distribution to check normality
+    """
     stat, p = shapiro(data)
     print('Statistics=%.3f, p=%.3f' % (stat, p))
 
@@ -20,6 +25,12 @@ def normal_test(data):
 
 
 def mann_whit_test(p_data, v_data):
+    """Perform the mann_whitney test 
+
+    Args:
+        p_data (array_like): Face-to-face Distribution
+        v_data (array_like): Virtual Distribution
+    """
     print("Presential Median: " + str(p_data.median()))
     print("Virtual Median: " + str(v_data.median()))
 
@@ -34,6 +45,13 @@ def mann_whit_test(p_data, v_data):
 
 
 def get_percentages(d):
+    """Receive output of classification and parse Patient%
+
+    Args:
+        d (Dataframe) : Output of final_classify.py
+    Returns:
+        (array_like, array_like): Both face-to-face and presential distributions
+    """
     presential_stats = d + '/Presential/proc_res/Totals/Stats.csv'
     virtual_stats = d + '/Virtual/proc_res/Totals/Stats.csv'
 
@@ -75,7 +93,7 @@ def main(args):
     mann_whit_test(full_p_data, full_v_data)
 
     ax = sns.violinplot(x='Doctor', y='Patient_Percentage',
-                        hue='type', data=df, split=True)
+                        hue='type', data=df, split=True, inner='stick')
 
     plt.title(args.spec)
     if args.spec == 'MedGeral':
