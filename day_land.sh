@@ -19,7 +19,7 @@
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D16/Virtual/15-03-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D16/Virtual/04-05-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D5/Virtual/03-03-2022
-bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D7/Virtual/19-05-2022
+bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D7/Virtual/26-05-2022
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D4/Virtual/12-05-2022
 
 #bash landmarking_script.sh -d /media/vislab/My_Passport/Tese/videos/MedGeral/D16/Presential/11-03-2022
